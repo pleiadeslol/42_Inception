@@ -11,6 +11,7 @@ RUN mkdir -p /var/lib/mysql /var/run/mysqld /var/log/mysql && \
 
 COPY conf/50-server.conf /etc/mysql/mariadb.conf.d/
 COPY tools/init-db.sh /usr/local/bin/
+
 RUN chmod +x /usr/local/bin/init-db.sh
 
 EXPOSE 3360
