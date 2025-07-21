@@ -1,19 +1,28 @@
 FROM debian:bullseye
 
-RUN apt-get -y update && \
-    apt-get -y upgrade && \
-    apt-get -y install mariadb-server 
+ARG MYSQL_USER
+ARG MYSQL_PASSWORD
+ARG MYSQL_DATABASE
+ARG MYSQL_ROOT_PASSWORD
 
-RUN mkdir -p /var/lib/mysql /var/run/mysqld /var/log/mysql && \
-    chown -R mysql:mysql /var/lib/mysql /var/run/mysqld /var/log/mysql && \
-    chmod 777 /var/run/mysqld && \
-    chmod 755 /var/log/mysql
+ENV MYSQL_DATABASE=wordpress
+ENV MYSQL_USER=${MYSQL_USER}
+ENV MYSQL_PASSWORD=${MYSQL_PASSWORD}
+ENV MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 
-COPY conf/50-server.conf /etc/mysql/mariadb.conf.d/
+RUN apt -y update && apt install mariadb-server -y
+
+# Create necessary directories and set permissions
+RUN mkdir -p /run/mysqld && \
+    chown -R mysql:mysql /run/mysqld/ && \
+    chmod 755 /run/mysqld && \
+    chown -R mysql:mysql /var/lib/mysql
+
+# Copy configuration and script
+COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 COPY tools/init-db.sh /usr/local/bin/
-
 RUN chmod +x /usr/local/bin/init-db.sh
 
 EXPOSE 3306
 
-CMD ["/usr/local/bin/init-db.sh"]
+CMD ["/usr/local/bin/init-db.sh", "mysqld_safe", "--user=mysql"]
