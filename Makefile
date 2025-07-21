@@ -3,6 +3,7 @@ USER= rzarhoun
 all: up
 
 up:
+	mkdir -p /home/${USER}
 	mkdir -p /home/${USER}/data/mysql
 	mkdir -p /home/${USER}/data/wordpress
 	docker-compose -f srcs/docker-compose.yml up -d --build

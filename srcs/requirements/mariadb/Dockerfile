@@ -14,6 +14,6 @@ COPY tools/init-db.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/init-db.sh
 
-EXPOSE 3360
+EXPOSE 3306
 
 CMD ["/usr/local/bin/init-db.sh"]
