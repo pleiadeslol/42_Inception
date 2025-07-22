@@ -2,7 +2,7 @@
 define('DB_NAME', getenv('MYSQL_DATABASE'));
 define('DB_USER', 'MYSQL_USER');
 define('DB_PASSWORD', 'MYSQL_PASSWORD');
-define('DB_HOST', 'mariadb');
+define('DB_HOST', 'srcs_mariadb_1');
 define('DB_CHARSET', 'utf8mb4');
 define('DB_COLLATE', '');
 
