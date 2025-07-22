@@ -26,10 +26,10 @@ RUN wget https://wordpress.org/latest.tar.gz && \
     tar -xzf latest.tar.gz && \
     rm latest.tar.gz
 
-RUN mkdir -p /var/www/html /var/www/inception
+RUN mkdir -p /run/php /var/www/inception
 
+COPY conf/www.conf /etc/php/7.4/fpm/pool.d/
 COPY tools/setup-wordpress.sh /usr/local/bin/setup-wordpress.sh
-COPY conf/wp-config.php /etc/php/7.4/fpm/pool.d/
 RUN chmod +x /usr/local/bin/setup-wordpress.sh
 
 WORKDIR /var/www/inception

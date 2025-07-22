@@ -9,7 +9,7 @@ done
 
 echo "MariaDB is ready!"
 
-if [ -f wp-config.php ]; then
+if [ -f ./wp-config.php ]; then
         echo "wp-config.php already exists"
 else
     echo "Installing Wordpress..."
@@ -44,4 +44,4 @@ else
     echo "WordPress installation completed successfully!"
 fi
 
-exec $@
+exec "@$"
