@@ -8,65 +8,40 @@ until nc -z srcs_mariadb_1 3306; do
 done
 
 echo "MariaDB is ready!"
-cd /var/www/html/wordpress
 
-# Wait for database to be fully ready
-echo "Waiting for database to be fully ready..."
-sleep 5
-
-# Check if WordPress is already configured
-if ! wp core is-installed --allow-root; then
-    echo "WordPress is not installed - performing installation"
-    
-    # Make sure wp-config.php is properly set up
-    if [ -f wp-config.php ]; then
+if [ -f wp-config.php ]; then
         echo "wp-config.php already exists"
-    else
-        echo "Creating wp-config.php"
-        wp config create \
-            --dbname="$MYSQL_DATABASE"\
-            --dbuser="$MYSQL_USER" \
-            --dbpass="$MYSQL_PASSWORD" \
-            --dbhost=mariadb \
-            --allow-root
-    fi
+else
+    echo "Installing Wordpress..."
+    wp --allow-root --path="/var/www/html" core download --force
+
+    echo "Creating wp-config.php"
+    wp --allow-root --path="/var/www/html" config create \
+        --dbname="$MYSQL_DATABASE"\
+        --dbuser="$MYSQL_USER" \
+        --dbpass="$MYSQL_PASSWORD" \
+        --dbhost=srcs_mariadb_1 \
+        --force
     
-    echo "Installing WordPress..."
-    # Run installation as root since we have the --allow-root flag
-    wp core install \
+    chmod -R 755 /var/www/
+    chown -R www-data:www-data /var/www/
+
+    echo "Installing WordPress core..."
+    wp --allow-root --path="/var/www/html" core install \
         --url="https:://$DOMAIN_NAME" \
         --title="Inception" \
         --admin_user="$WP_ADMIN_USER" \
         --admin_password="$WP_ADMIN_PASSWORD" \
-        --admin_email="$WP_ADMIN_EMAIL" \
-        --path="/var/www/html" \
-        --alow-root
-        
-    if wp core is-installed --allow-root; then
-        echo "WordPress installation completed successfully!"
-    else
-        echo "WordPress installation failed!"
-        exit 1
-    fi
-else
-    echo "WordPress is already installed and configured."
-fi
+        --admin_email="$WP_ADMIN_EMAIL"
 
-# Make sure WordPress has right permissions
-chown -R www-data:www-data /var/www/html/wordpress
-
-if ! wp user get "$WP_USER" --allow-root > /dev/null 2>&1; then
-    echo "Creating WordPress user..."
-    wp user create \
+    echo "Creating user..."
+    wp --allow-root --path="/var/www/html" user create \
         "$WP_USER" \
         "$WP_USER_EMAIL" \
         --user_pass="$WP_USER_PASSWORD" \
-        --role=author \
-        --allow-root
-else
-    echo "WordPress user already exists."
+        --role=author
+
+    echo "WordPress installation completed successfully!"
 fi
 
-echo "Starting PHP-FPM..."
-# Start PHP-FPM
-exec php-fpm8.2 -F
+exec $@
