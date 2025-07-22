@@ -2,7 +2,7 @@
 
 # Wait for MariaDB
 echo "Waiting for MariaDB..."
-until nc -z srcs-mariadb-1 3306; do
+until nc -z srcs_mariadb_1 3306; do
     echo "Waiting for MariaDB to be ready..."
     sleep 2
 done
