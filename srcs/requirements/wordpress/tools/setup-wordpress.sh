@@ -13,29 +13,29 @@ if [ -f ./wp-config.php ]; then
         echo "wp-config.php already exists"
 else
     echo "Installing Wordpress..."
-    wp --allow-root --path="/var/www/html" core download --force
+    wp --allow-root core download --force
 
     echo "Creating wp-config.php"
-    wp --allow-root --path="/var/www/html" config create \
+    wp --allow-root config create \
         --dbname="$MYSQL_DATABASE"\
         --dbuser="$MYSQL_USER" \
         --dbpass="$MYSQL_PASSWORD" \
         --dbhost=srcs_mariadb_1 \
         --force
-    
-    chmod -R 755 /var/www/
-    chown -R www-data:www-data /var/www/
 
     echo "Installing WordPress core..."
-    wp --allow-root --path="/var/www/html" core install \
+    wp --allow-root core install \
         --url="https:://$DOMAIN_NAME" \
         --title="Inception" \
         --admin_user="$WP_ADMIN_USER" \
         --admin_password="$WP_ADMIN_PASSWORD" \
-        --admin_email="$WP_ADMIN_EMAIL"
+        --admin_email="$WP_ADMIN_EMAIL" \
+        --skip-email
+
+    chown -R www-data:www-data /var/www/html/wordpress
 
     echo "Creating user..."
-    wp --allow-root --path="/var/www/html" user create \
+    wp --allow-root user create \
         "$WP_USER" \
         "$WP_USER_EMAIL" \
         --user_pass="$WP_USER_PASSWORD" \
@@ -44,4 +44,5 @@ else
     echo "WordPress installation completed successfully!"
 fi
 
-exec "@$"
+echo "Starting PHP-FPM..."
+exec php-fpm8.2 -F
