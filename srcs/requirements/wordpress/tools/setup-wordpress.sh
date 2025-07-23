@@ -45,4 +45,4 @@ else
 fi
 
 echo "Starting PHP-FPM..."
-exec php-fpm8.2 -F
+exec php-fpm7.4 -F
