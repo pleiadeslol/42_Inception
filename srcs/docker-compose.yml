@@ -44,12 +44,6 @@ services:
     networks:
       - inception_network
     restart: unless-stopped
-  redis:
-    build:
-      context: ./requirements/bonus/redis
-    networks:
-      -inception_network
-    restart: unless-stopped
 
 networks:
   inception_network:
