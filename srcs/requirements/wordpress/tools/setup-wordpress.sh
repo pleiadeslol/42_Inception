@@ -4,7 +4,7 @@
 echo "Waiting for MariaDB..."
 until nc -z srcs_mariadb_1 3306; do
     echo "Waiting for MariaDB to be ready..."
-    sleep 2
+    sleep 5
 done
 
 echo "MariaDB is ready!"
@@ -14,6 +14,8 @@ if [ -f ./wp-config.php ]; then
 else
     echo "Installing Wordpress..."
     wp --allow-root core download --force
+
+    sleep 5
 
     echo "Creating wp-config.php"
     wp --allow-root config create \
